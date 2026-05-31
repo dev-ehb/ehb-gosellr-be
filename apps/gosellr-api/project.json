@@ -1,0 +1,51 @@
+{
+  "name": "gosellr-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/gosellr-api/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/gosellr-api",
+        "main": "apps/gosellr-api/src/main.ts",
+        "tsConfig": "apps/gosellr-api/tsconfig.app.json",
+        "isolatedConfig": false
+      },
+      "configurations": {
+        "development": { "optimization": false },
+        "production": { "optimization": true, "extractLicenses": true, "inspect": false }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "options": { "buildTarget": "gosellr-api:build" },
+      "configurations": {
+        "development": {
+          "buildTarget": "gosellr-api:build:development",
+          "inspect": true
+        },
+        "production": {
+          "buildTarget": "gosellr-api:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/gosellr-api/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
