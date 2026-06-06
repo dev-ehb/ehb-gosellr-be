@@ -17,9 +17,14 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
+  // CORS — CORS_ORIGIN env is a comma-separated list of allowed origins.
+  const corsOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:4002')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: process.env.CORS_ORIGIN ?? 'http://localhost:4002',
+    origin: corsOrigins,
     credentials: true,
   });
 
