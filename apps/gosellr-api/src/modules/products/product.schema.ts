@@ -75,3 +75,5 @@ export const ProductSchema = SchemaFactory.createForClass(Product);
 ProductSchema.index({ sq_status: 1, is_active: 1 });
 // Seller's own products
 ProductSchema.index({ seller_id: 1, created_at: -1 });
+// Price range filtering + price sort on the browse page
+ProductSchema.index({ price: 1 });

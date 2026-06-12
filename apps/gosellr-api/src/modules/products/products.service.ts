@@ -49,6 +49,9 @@ export interface GetProductsQuery {
    *   'all'                — every active product, including pending/rejected/not_submitted
    */
   status?: 'approved' | 'all';
+  /** Price range (inclusive). */
+  min_price?: number;
+  max_price?: number;
 }
 
 function getSqBadgeLabel(level: number | null): string {
@@ -78,7 +81,10 @@ export class ProductsService {
   // ── Public: products for buyers ──────────────────────────────────────────
 
   async getApprovedProducts(query: GetProductsQuery) {
-    const { category, page = 1, limit = 20, q, sort = 'newest', seller_id, status = 'approved' } = query;
+    const {
+      category, page = 1, limit = 20, q, sort = 'newest', seller_id,
+      status = 'approved', min_price, max_price,
+    } = query;
     const filter: Record<string, unknown> = { is_active: true };
     if (status === 'approved') filter['sq_status'] = 'approved';
     if (category) filter['category'] = category;
@@ -90,6 +96,11 @@ export class ProductsService {
       const rx = new RegExp(safe, 'i');
       filter['$or'] = [{ title: rx }, { description: rx }];
     }
+    // Price range (inclusive). `price` is indexed so the range stays fast.
+    const priceRange: Record<string, number> = {};
+    if (typeof min_price === 'number' && !Number.isNaN(min_price)) priceRange['$gte'] = min_price;
+    if (typeof max_price === 'number' && !Number.isNaN(max_price)) priceRange['$lte'] = max_price;
+    if (Object.keys(priceRange).length > 0) filter['price'] = priceRange;
 
     const sortMap: Record<string, Record<string, 1 | -1>> = {
       newest:     { sq_decided_at: -1, created_at: -1 },
