@@ -65,6 +65,8 @@ export class ProductsController {
   @ApiQuery({ name: 'sort', required: false, enum: ['newest', 'popular', 'price_asc', 'price_desc'] })
   @ApiQuery({ name: 'seller_id', required: false, description: 'Filter to a single seller (brand store)' })
   @ApiQuery({ name: 'status', required: false, enum: ['approved', 'all'] })
+  @ApiQuery({ name: 'min_price', required: false, description: 'Minimum price (inclusive)' })
+  @ApiQuery({ name: 'max_price', required: false, description: 'Maximum price (inclusive)' })
   getProducts(
     @Query('category') category?: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
@@ -73,9 +75,13 @@ export class ProductsController {
     @Query('sort') sort?: 'newest' | 'popular' | 'price_asc' | 'price_desc',
     @Query('seller_id') seller_id?: string,
     @Query('status') status?: 'approved' | 'all',
+    @Query('min_price') minPrice?: string,
+    @Query('max_price') maxPrice?: string,
   ) {
     return this.productsService.getApprovedProductsWithOwner({
       category, page, limit, q, sort, seller_id, status,
+      min_price: minPrice !== undefined ? Number(minPrice) : undefined,
+      max_price: maxPrice !== undefined ? Number(maxPrice) : undefined,
     });
   }
 
